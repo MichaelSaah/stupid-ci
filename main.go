@@ -37,7 +37,7 @@ func createJob(w http.ResponseWriter, r *http.Request) {
 
 	err := decoder.Decode(&job)
 	if err != nil {
-		panic("ya fucked up")
+		panic(err)
 	}
 
 	internalJob := InternalJob{
@@ -51,9 +51,11 @@ func createJob(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	client.Do(radix.Cmd(nil, "LPUSH", "jobs", internalJob.UUID))
-
+	// record job details
 	client.Do(radix.Cmd(nil, "SET", internalJob.UUID, string(internalJobJson)))
+
+	// add job to queue
+	client.Do(radix.Cmd(nil, "LPUSH", "jobs", internalJob.UUID))
 
 	log.Println(fmt.Sprintf("Job submitted: %s", job.ResourcePath))
 }
