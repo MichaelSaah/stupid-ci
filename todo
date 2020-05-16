@@ -3,3 +3,4 @@ delete job by uuid
   just del the key
 basic auth
 job executor
+hateoas? somehow?
